@@ -3,7 +3,7 @@ Web Portfolio to showcase projects and skills in better manner.
 
 
 
-###### https://anowarkabir.github.io/kabir
+###### https://anowarkabir.github.io/
 
 
 ### About me
