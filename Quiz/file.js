@@ -1,6 +1,21 @@
 var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, correct = 0;
 var questions = [
-    [ "What is 10 + 4?", "12", "14", "16", "B" ],
+        ["1. If x = 5, what is a correct syntax for printing the data type of the variable x?", "A) print(dtype(x))",  "B) print(type(x))", "C) print(x.dtype())", "B"],
+	["2. Which is NOT a legal numeric data type in Python:", "A) int", "B) long", "C) float", "B"],
+        ["3. What will be the result of the following code: x = 'Welcome'             print(x[3])", "A) Wel", "B) c ", "C) Welcome Welcome Welcom", "B"],
+	["4. What will be the result of the following syntax:
+         x = 5
+         x += 6
+        print(x)", "A)5", "B) 6",  "C) 11" , "C"],
+       ["5. What will be the result of the following syntax:
+        mylist = ['apple', 'banana', 'cherry']
+        print(mylist[-1]) ", "A) apple", 			"B) banana", 	"C) cherry", "C"],
+       ["6. Whis one of these is a tuple?", "A) thistuple = ('apple', 'banana', 'cherry')", "B) thistuple = ['apple', 'banana', 'cherry']", "C) thistuple = {'apple', 'banana', 'cherry'}", "A"],
+       ["7) Which one of these is a set?", "A) myset = ('apple', 'banana', 'cherry')", "B) myset = ['apple', 'banana', 'cherry']"," C) myset = {'apple', 'banana', 'cherry'}", "C"],
+
+
+	
+        [ "What is 10 + 4?", "12", "14", "16", "B" ],
 	[ "What is 20 - 9?", "7", "13", "11", "C" ],
 	[ "What is 7 x 3?", "21", "24", "25", "A" ],
 	[ "What is 8 / 2?", "10", "2", "4", "C" ]
