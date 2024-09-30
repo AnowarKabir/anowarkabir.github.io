@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JavaScript Quiz</title>
+    <title>Basic Python Quiz</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 5px solid #ccc;
+            border-radius: 8px;
         }
         h2 {
             color: green;
@@ -20,6 +20,12 @@
         }
         button {
             margin-top: 10px;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
         }
     </style>
 </head>
@@ -32,7 +38,6 @@
         var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, correct = 0;
         var userAnswers = []; // To store user's answers
         var questions = [
-            // [Question, Option A, Option B, Option C, Correct Answer]
             ["1. If x = 5, what is a correct syntax for printing the data type of the variable x?", "A) print(dtype(x))", "B) print(type(x))", "C) print(x.dtype())", "B"],
             ["2. Which is NOT a legal numeric data type in Python?", "A) int", "B) long", "C) float", "B"],
             ["3. What will be the result of the following code: x = 'Welcome'; print(x[3])", "A) Wel", "B) c", "C) Welcome Welcome Welcom", "B"],
@@ -94,8 +99,9 @@
             resultHTML += "<h3>Your Answers:</h3>";
             resultHTML += "<ul>";
             for (var i = 0; i < questions.length; i++) {
+                var answerClass = userAnswers[i] === questions[i][4] ? "correct" : "incorrect";
                 resultHTML += "<li>Q" + (i + 1) + ": " + questions[i][0] + "<br>";
-                resultHTML += "Your Answer: " + userAnswers[i] + " | Correct Answer: " + questions[i][4] + "</li>";
+                resultHTML += "Your Answer: <span class='" + answerClass + "'>" + userAnswers[i] + "</span> | Correct Answer: <span class='correct'>" + questions[i][4] + "</span></li>";
             }
             resultHTML += "</ul>";
             _("test").innerHTML = resultHTML;
