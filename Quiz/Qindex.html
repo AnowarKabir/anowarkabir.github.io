@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic Python Quiz</title>
+    <title>Python Quiz</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             padding: 20px;
-            border: 5px solid #ccc;
-            border-radius: 8px;
+            border: 5px solid #cc4;
+            border-radius: 10px;
         }
         h2 {
             color: green;
@@ -19,7 +20,7 @@
             color: blue;
         }
         button {
-            margin-top: 10px;
+            margin-top: 15px;
         }
         .correct {
             color: green;
@@ -33,6 +34,7 @@
 
     <div id="test_status"></div>
     <div id="test"></div>
+    <button id="pdfButton" style="display: none;" onclick="generatePDF()">Download Report as PDF</button>
 
     <script>
         var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, correct = 0;
@@ -106,6 +108,20 @@
             resultHTML += "</ul>";
             _("test").innerHTML = resultHTML;
             _("test_status").innerHTML = "Test Completed";
+            _("pdfButton").style.display = "block"; // Show PDF button
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            let reportContent = `Quiz Report\n\nYou got ${correct} out of ${questions.length} questions correct.\n\nYour Answers:\n`;
+            for (var i = 0; i < questions.length; i++) {
+                reportContent += `Q${i + 1}: ${questions[i][0]}\nYour Answer: ${userAnswers[i]} | Correct Answer: ${questions[i][4]}\n`;
+            }
+
+            doc.text(reportContent, 10, 10);
+            doc.save('quiz_report.pdf');
         }
 
         window.addEventListener("load", renderQuestion, false);
