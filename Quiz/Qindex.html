@@ -154,6 +154,18 @@
             _("test").innerHTML = resultHTML;
             _("test_status").innerHTML = "Test Completed";
             _("pdfButton").style.display = "block"; // Show PDF button
+            
+            // Store user info and score in local storage
+            storeUserInfo(name, batchNo, studentId, correct, questions.length);
+        }
+
+        function storeUserInfo(name, batchNo, studentId, correct, totalQuestions) {
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            users.push({ name, batchNo, studentId, correct, totalQuestions });
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Redirect to the results page (webDev.html)
+            window.location.href = '../webDev.html';
         }
 
         function generatePDF() {
