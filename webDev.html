@@ -1,28 +1,66 @@
-<!DOCTYPE HTML>
-<html>
-   <head>
-      <style>
-         .quiz-button {
-            display: inline-block;
-            padding: 20px 40px;
-            font-size: 24px;
-            color: white;
-            background-color: #4CAF50;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
             text-align: center;
-            text-decoration: none;
-            border-radius: 12px;
-            transition: background-color 0.3s ease;
-            border: none;
-         }
-         .quiz-button:hover {
-            background-color: #45a049;
-         }
-      </style>
-   </head>
-   <body>
-      <h2>If you want to take a quiz, please click the button below:</h2>
-      <a href="Quiz/Qindex.html" class="quiz-button">Click here for Python Quiz</a>
-      
-      <br><br><br>
-   </body>
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>All Users' Info and Marks</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Batch No</th>
+                <th>ID</th>
+                <th>Marks Obtained</th>
+                <th>Total Questions</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+            <!-- User data will be injected here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Fetch user data from local storage and display it in the table
+        function loadUserData() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const tableBody = document.getElementById('userTableBody');
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.batchNo}</td>
+                    <td>${user.studentId}</td>
+                    <td>${user.correct}</td>
+                    <td>${user.totalQuestions}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        window.onload = loadUserData;
+    </script>
+
+</body>
 </html>
