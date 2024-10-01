@@ -193,26 +193,79 @@
         }
 
         function generatePDF() {
-            var { jsPDF } = window.jspdf;
-            var doc = new jsPDF();
+        var { jsPDF } = window.jspdf;
+        var doc = new jsPDF();
 
-            // Add quiz details
-            doc.text(20, 20, 'Python Quiz Results');
-            doc.text(20, 30, 'Name: ' + name);
-            doc.text(20, 40, 'Batch No: ' + batchNo);
-            doc.text(20, 50, 'Student ID: ' + studentId);
-            doc.text(20, 60, 'MCQ Questions: ' + correct + ' out of ' + (questions.length - 2));
+        // Add quiz details at the top
+        doc.setFontSize(16);
+        doc.text(20, 20, 'Python Quiz Results');
+        doc.setFontSize(12);
+        doc.text(20, 30, 'Name: ' + name);
+        doc.text(20, 40, 'Batch No: ' + batchNo);
+        doc.text(20, 50, 'Student ID: ' + studentId);
 
-            // Add theoretical answers to PDF
-            doc.text(20, 80, 'Theoretical Question 8: Reverse a String');
-            doc.text(20, 90, theoreticalAnswers.Q8);
+        // MCQ Results
+        doc.text(20, 60, 'MCQ Questions: You got ' + correct + ' out of ' + (questions.length - 2) + ' correct.');
+        let y = 70;
 
-            doc.text(20, 120, 'Theoretical Question 9: Factorial using Recursion');
-            doc.text(20, 130, theoreticalAnswers.Q9);
+        // Loop through MCQ questions and add to PDF
+        for (var i = 0; i < 7; i++) {
+            var questionText = questions[i][0];
+            var options = 'Options: ' + questions[i][1] + ', ' + questions[i][2] + ', ' + questions[i][3];
+            var userAnswer = userAnswers[i];
+            var correctAnswer = questions[i][4];
+            var isCorrect = userAnswer === correctAnswer ? "(Correct)" : "(Incorrect)";
 
-            // Save the PDF
-            doc.save(name + '_Quiz_Results.pdf');
+            doc.text(20, y, questionText);
+            y += 10;
+            doc.text(20, y, options);
+            y += 10;
+            doc.text(20, y, "Your Answer: " + userAnswer + " " + isCorrect);
+            y += 10;
+            doc.text(20, y, "Correct Answer: " + correctAnswer);
+            y += 10;
+
+            // If content goes off page, add a new page
+            if (y > 270) {
+                doc.addPage();
+                y = 20;
+            }
         }
+
+        // Add a line separator before theoretical questions
+        y += 10;
+        doc.text(20, y, 'Theoretical Questions:');
+        y += 10;
+
+        // Theoretical Question 8
+        doc.text(20, y, 'Q8: Write a Python program that reverses a string.');
+        y += 10;
+        var answerQ8 = theoreticalAnswers.Q8.split("\n");  // Handle multi-line Python code
+        answerQ8.forEach(line => {
+            doc.text(20, y, line);
+            y += 10;
+            if (y > 270) {
+                doc.addPage();
+                y = 20;
+            }
+        });
+
+        // Theoretical Question 9
+        doc.text(20, y, 'Q9: Write a Python program that finds the factorial of a number using recursion.');
+        y += 10;
+        var answerQ9 = theoreticalAnswers.Q9.split("\n");  // Handle multi-line Python code
+        answerQ9.forEach(line => {
+            doc.text(20, y, line);
+            y += 10;
+            if (y > 270) {
+                doc.addPage();
+                y = 20;
+            }
+        });
+
+        // Save the PDF
+        doc.save(name + '_Quiz_Results.pdf');
+    }
 
     </script>
 
