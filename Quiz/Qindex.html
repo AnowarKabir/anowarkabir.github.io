@@ -18,7 +18,7 @@
         }
         h3 {
             color: blue;
-            font-size: 24px;
+            font-size: 24px; /* Bigger font for questions */
         }
         button {
             margin-top: 10px;
@@ -40,18 +40,25 @@
             color: red;
         }
         input[type="radio"] {
-            margin-bottom: 20px;
-            transform: scale(1.3);
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-            margin-bottom: 20px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 16px;
+            margin-bottom: 20px; /* Space between options */
+            transform: scale(1.3); /* Increase the size of radio buttons */
         }
         .input-section {
             margin-bottom: 20px;
+        }
+        #resultsTable {
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
         }
     </style>
 </head>
@@ -75,11 +82,26 @@
     <div id="test_status" style="display:none;"></div>
     <div id="test" style="display:none;"></div>
     <button id="pdfButton" style="display: none;" onclick="generatePDF()">Download Report as PDF</button>
+    <button id="showTableButton" style="display: none;" onclick="showResultsTable()">Show My Results Table</button>
+
+    <!-- Table to display the results -->
+    <div id="resultsTable">
+        <h2>Your Results</h2>
+        <table>
+            <tr>
+                <th>Question No</th>
+                <th>Your Answer</th>
+                <th>Correct Answer</th>
+                <th>Result</th>
+            </tr>
+            <tbody id="resultsTableBody"></tbody>
+        </table>
+    </div>
 
     <script>
         var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, correct = 0;
         var userAnswers = [];
-        var theoreticalAnswers = { Q8: "", Q9: "" };  // Store theoretical answers
+        var theoreticalAnswers = { Q8: "", Q9: "" }; // For theoretical answers
         var name, batchNo, studentId;
         var questions = [
             ["1. If x = 5, what is a correct syntax for printing the data type of the variable x?", "A) print(dtype(x))", "B) print(type(x))", "C) print(x.dtype())", "B"],
@@ -88,10 +110,7 @@
             ["4. What will be the result of the following syntax: x = 5; x += 6; print(x)", "A) 5", "B) 6", "C) 11", "C"],
             ["5. What will be the result of the following syntax: mylist = ['apple', 'banana', 'cherry']; print(mylist[-1])", "A) apple", "B) banana", "C) cherry", "C"],
             ["6. Which one of these is a tuple?", "A) thistuple = ('apple', 'banana', 'cherry')", "B) thistuple = ['apple', 'banana', 'cherry']", "C) thistuple = {'apple', 'banana', 'cherry'}", "A"],
-            ["7. Which one of these is a set?", "A) myset = ('apple', 'banana', 'cherry')", "B) myset = ['apple', 'banana', 'cherry']", "C) myset = {'apple', 'banana', 'cherry'}", "C"],
-            // Add two theoretical questions that accept Python code input
-            ["8. Write a Python program that reverses a string.", "Theoretical", "", "", ""],
-            ["9. Write a Python program that finds the factorial of a number using recursion.", "Theoretical", "", "", ""]
+            ["7. Which one of these is a set?", "A) myset = ('apple', 'banana', 'cherry')", "B) myset = ['apple', 'banana', 'cherry']", "C) myset = {'apple', 'banana', 'cherry'}", "C"]
         ];
 
         function _(x) {
@@ -115,40 +134,20 @@
         function renderQuestion() {
             test = _("test");
             if (pos >= questions.length) {
-                displayResults();
+                // After MCQs, show theoretical questions
+                renderTheoreticalQuestions();
                 return false;
             }
             _("test_status").innerHTML = "Question " + (pos + 1) + " of " + questions.length;
             question = questions[pos][0];
-
-            if (questions[pos][1] === "Theoretical") {
-                // Render theoretical questions with a text area input for Python code
-                test.innerHTML = "<h3>" + question + "</h3>";
-                test.innerHTML += "<textarea id='answer' placeholder='Write your Python code here...'></textarea><br>";
-                test.innerHTML += "<button onclick='saveTheoreticalAnswer()'>Submit Answer</button>";
-            } else {
-                // Render multiple-choice questions
-                chA = questions[pos][1];
-                chB = questions[pos][2];
-                chC = questions[pos][3];
-                test.innerHTML = "<h3>" + question + "</h3>";
-                test.innerHTML += "<input type='radio' name='choices' value='A'> " + chA + "<br>";
-                test.innerHTML += "<input type='radio' name='choices' value='B'> " + chB + "<br>";
-                test.innerHTML += "<input type='radio' name='choices' value='C'> " + chC + "<br><br>";
-                test.innerHTML += "<button onclick='checkAnswer()'>Submit Answer</button>";
-            }
-        }
-
-        function saveTheoreticalAnswer() {
-            var answer = _("answer").value.trim();
-            if (answer === "") {
-                alert("Please provide an answer before submitting.");
-                return;
-            }
-            // Save the answer to theoreticalAnswers object
-            theoreticalAnswers["Q" + (pos + 1)] = answer;
-            pos++;
-            renderQuestion();
+            chA = questions[pos][1];
+            chB = questions[pos][2];
+            chC = questions[pos][3];
+            test.innerHTML = "<h3>" + question + "</h3>";
+            test.innerHTML += "<input type='radio' name='choices' value='A'> " + chA + "<br>";
+            test.innerHTML += "<input type='radio' name='choices' value='B'> " + chB + "<br>";
+            test.innerHTML += "<input type='radio' name='choices' value='C'> " + chC + "<br><br>";
+            test.innerHTML += "<button onclick='checkAnswer()'>Submit Answer</button>";
         }
 
         function checkAnswer() {
@@ -172,102 +171,122 @@
             }
         }
 
-        function displayResults() {
-            var resultHTML = "<h2>You got " + correct + " out of " + (questions.length - 2) + " MCQ questions correct.</h2>";
-            resultHTML += "<h3>Your Answers:</h3>";
-            resultHTML += "<ul>";
-            for (var i = 0; i < questions.length; i++) {
-                if (i < 7) {
-                    var answerClass = userAnswers[i] === questions[i][4] ? "correct" : "incorrect";
-                    resultHTML += "<li>Q" + (i + 1) + ": " + questions[i][0] + "<br>";
-                    resultHTML += "Options: " + questions[i][1] + ", " + questions[i][2] + ", " + questions[i][3] + "<br>";
-                    resultHTML += "Your Answer: <span class='" + answerClass + "'>" + userAnswers[i] + "</span> | Correct Answer: <span class='correct'>" + questions[i][4] + "</span></li><br>";
-                }
-            }
-            resultHTML += "<h3>Theoretical Answers:</h3>";
-            resultHTML += "<li>Q8 (Reverse String): <pre>" + theoreticalAnswers.Q8 + "</pre></li><br>";
-            resultHTML += "<li>Q9 (Factorial using Recursion): <pre>" + theoreticalAnswers.Q9 + "</pre></li><br>";
-            resultHTML += "</ul>";
-            _("test").innerHTML = resultHTML;
-            _("pdfButton").style.display = "block"; // Show PDF button
+        function renderTheoreticalQuestions() {
+            test.innerHTML = `
+                <h3>8. Write a Python program to reverse a string.</h3>
+                <textarea id="theoreticalQ8" rows="4" cols="50"></textarea><br><br>
+                <h3>9. Write a Python program to find the factorial of a number using recursion.</h3>
+                <textarea id="theoreticalQ9" rows="4" cols="50"></textarea><br><br>
+                <button onclick="submitTheoreticalAnswers()">Submit Theoretical Answers</button>
+            `;
+        }
+
+        function submitTheoreticalAnswers() {
+            theoreticalAnswers.Q8 = _("theoreticalQ8").value;
+            theoreticalAnswers.Q9 = _("theoreticalQ9").value;
+
+            _("test").innerHTML = `<h2>You completed the quiz!</h2>`;
+            _("test_status").innerHTML = "Test Completed";
+            _("pdfButton").style.display = "block"; // Show PDF button after submission
         }
 
         function generatePDF() {
-        var { jsPDF } = window.jspdf;
-        var doc = new jsPDF();
+            const { jsPDF } = window.jspdf;
+            var doc = new jsPDF();
 
-        // Add quiz details at the top
-        doc.setFontSize(16);
-        doc.text(20, 20, 'Python Quiz Results');
-        doc.setFontSize(12);
-        doc.text(20, 30, 'Name: ' + name);
-        doc.text(20, 40, 'Batch No: ' + batchNo);
-        doc.text(20, 50, 'Student ID: ' + studentId);
+            doc.setFontSize(16);
+            doc.text(20, 20, 'Python Quiz Results');
+            doc.setFontSize(12);
+            doc.text(20, 30, 'Name: ' + name);
+            doc.text(20, 40, 'Batch No: ' + batchNo);
+            doc.text(20, 50, 'Student ID: ' + studentId);
 
-        // MCQ Results
-        doc.text(20, 60, 'MCQ Questions: You got ' + correct + ' out of ' + (questions.length - 2) + ' correct.');
-        let y = 70;
+            doc.text(20, 60, 'MCQ Questions: You got ' + correct + ' out of ' + questions.length + ' correct.');
+            let y = 70;
+            for (var i = 0; i < questions.length; i++) {
+                var questionText = questions[i][0];
+                var options = 'Options: ' + questions[i][1] + ', ' + questions[i][2] + ', ' + questions[i][3];
+                var userAnswer = userAnswers[i];
+                var correctAnswer = questions[i][4];
+                var isCorrect = userAnswer === correctAnswer ? "(Correct)" : "(Incorrect)";
+                
+                doc.text(20, y, questionText);
+                y += 10;
+                doc.text(20, y, options);
+                y += 10;
+                doc.text(20, y, "Your Answer: " + userAnswer + " " + isCorrect);
+                y += 10;
+                doc.text(20, y, "Correct Answer: " + correctAnswer);
+                y += 10;
 
-        // Loop through MCQ questions and add to PDF
-        for (var i = 0; i < 7; i++) {
-            var questionText = questions[i][0];
-            var options = 'Options: ' + questions[i][1] + ', ' + questions[i][2] + ', ' + questions[i][3];
-            var userAnswer = userAnswers[i];
-            var correctAnswer = questions[i][4];
-            var isCorrect = userAnswer === correctAnswer ? "(Correct)" : "(Incorrect)";
-
-            doc.text(20, y, questionText);
-            y += 10;
-            doc.text(20, y, options);
-            y += 10;
-            doc.text(20, y, "Your Answer: " + userAnswer + " " + isCorrect);
-            y += 10;
-            doc.text(20, y, "Correct Answer: " + correctAnswer);
-            y += 10;
-
-            // If content goes off page, add a new page
-            if (y > 270) {
-                doc.addPage();
-                y = 20;
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
             }
+
+            y += 10;
+            doc.text(20, y, 'Theoretical Questions:');
+            y += 10;
+
+            doc.text(20, y, 'Q8: Write a Python program that reverses a string.');
+            y += 10;
+            var answerQ8 = theoreticalAnswers.Q8.split("\n");
+            answerQ8.forEach(line => {
+                doc.text(20, y, line);
+                y += 10;
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
+            });
+
+            doc.text(20, y, 'Q9: Write a Python program that finds the factorial of a number using recursion.');
+            y += 10;
+            var answerQ9 = theoreticalAnswers.Q9.split("\n");
+            answerQ9.forEach(line => {
+                doc.text(20, y, line);
+                y += 10;
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
+            });
+
+            doc.save(name + '_Quiz_Results.pdf');
+            
+            _("showTableButton").style.display = "block"; // Show button to view table after PDF download
         }
 
-        // Add a line separator before theoretical questions
-        y += 10;
-        doc.text(20, y, 'Theoretical Questions:');
-        y += 10;
+        function showResultsTable() {
+            var tableBody = _("resultsTableBody");
+            tableBody.innerHTML = ""; // Clear previous data
 
-        // Theoretical Question 8
-        doc.text(20, y, 'Q8: Write a Python program that reverses a string.');
-        y += 10;
-        var answerQ8 = theoreticalAnswers.Q8.split("\n");  // Handle multi-line Python code
-        answerQ8.forEach(line => {
-            doc.text(20, y, line);
-            y += 10;
-            if (y > 270) {
-                doc.addPage();
-                y = 20;
+            for (var i = 0; i < questions.length; i++) {
+                var row = document.createElement("tr");
+                var questionNo = document.createElement("td");
+                var yourAnswer = document.createElement("td");
+                var correctAnswer = document.createElement("td");
+                var result = document.createElement("td");
+
+                questionNo.innerText = i + 1;
+                yourAnswer.innerText = userAnswers[i];
+                correctAnswer.innerText = questions[i][4];
+                result.innerText = (userAnswers[i] === questions[i][4]) ? "Correct" : "Incorrect";
+                result.className = (userAnswers[i] === questions[i][4]) ? "correct" : "incorrect";
+
+                row.appendChild(questionNo);
+                row.appendChild(yourAnswer);
+                row.appendChild(correctAnswer);
+                row.appendChild(result);
+
+                tableBody.appendChild(row);
             }
-        });
 
-        // Theoretical Question 9
-        doc.text(20, y, 'Q9: Write a Python program that finds the factorial of a number using recursion.');
-        y += 10;
-        var answerQ9 = theoreticalAnswers.Q9.split("\n");  // Handle multi-line Python code
-        answerQ9.forEach(line => {
-            doc.text(20, y, line);
-            y += 10;
-            if (y > 270) {
-                doc.addPage();
-                y = 20;
-            }
-        });
-
-        // Save the PDF
-        doc.save(name + '_Quiz_Results.pdf');
-    }
-
+            _("resultsTable").style.display = "block"; // Show the table after data is added
+        }
     </script>
 
 </body>
 </html>
+
