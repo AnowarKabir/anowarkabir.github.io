@@ -48,35 +48,8 @@ var questions = [
         "B) myset = ['apple', 'banana', 'cherry']",
         "C) myset = {'apple', 'banana', 'cherry'}",
         "C"
-    ],
-    [
-        "What is 10 + 4?",
-        "A) 12",
-        "B) 14",
-        "C) 16",
-        "B"
-    ],
-    [
-        "What is 20 - 9?",
-        "A) 7",
-        "B) 13",
-        "C) 11",
-        "C"
-    ],
-    [
-        "What is 7 x 3?",
-        "A) 21",
-        "B) 24",
-        "C) 25",
-        "A"
-    ],
-    [
-        "What is 8 / 2?",
-        "A) 10",
-        "B) 2",
-        "C) 4",
-        "C"
     ]
+    
 ];
 
 function _(x) {
