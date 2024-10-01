@@ -18,9 +18,20 @@
         }
         h3 {
             color: blue;
+            font-size: 24px; /* Bigger font for questions */
         }
         button {
             margin-top: 10px;
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
         }
         .correct {
             color: green;
@@ -28,17 +39,39 @@
         .incorrect {
             color: red;
         }
+        input[type="radio"] {
+            margin-bottom: 20px; /* Space between options */
+            transform: scale(1.3); /* Increase the size of radio buttons */
+        }
+        .input-section {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="test_status"></div>
-    <div id="test"></div>
+    <!-- Input section for Name, Batch No, ID -->
+    <div id="userInput">
+        <h2>Please Enter Your Details:</h2>
+        <div class="input-section">
+            <label for="name">Name: </label>
+            <input type="text" id="name" placeholder="Enter your name" required><br><br>
+            <label for="batchNo">Batch No: </label>
+            <input type="text" id="batchNo" placeholder="Enter your batch number" required><br><br>
+            <label for="studentId">ID: </label>
+            <input type="text" id="studentId" placeholder="Enter your ID" required><br><br>
+        </div>
+        <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <div id="test_status" style="display:none;"></div>
+    <div id="test" style="display:none;"></div>
     <button id="pdfButton" style="display: none;" onclick="generatePDF()">Download Report as PDF</button>
 
     <script>
         var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, correct = 0;
-        var userAnswers = []; // To store user's answers
+        var userAnswers = [];
+        var name, batchNo, studentId;
         var questions = [
             ["1. If x = 5, what is a correct syntax for printing the data type of the variable x?", "A) print(dtype(x))", "B) print(type(x))", "C) print(x.dtype())", "B"],
             ["2. Which is NOT a legal numeric data type in Python?", "A) int", "B) long", "C) float", "B"],
@@ -46,15 +79,25 @@
             ["4. What will be the result of the following syntax: x = 5; x += 6; print(x)", "A) 5", "B) 6", "C) 11", "C"],
             ["5. What will be the result of the following syntax: mylist = ['apple', 'banana', 'cherry']; print(mylist[-1])", "A) apple", "B) banana", "C) cherry", "C"],
             ["6. Which one of these is a tuple?", "A) thistuple = ('apple', 'banana', 'cherry')", "B) thistuple = ['apple', 'banana', 'cherry']", "C) thistuple = {'apple', 'banana', 'cherry'}", "A"],
-            ["7. Which one of these is a set?", "A) myset = ('apple', 'banana', 'cherry')", "B) myset = ['apple', 'banana', 'cherry']", "C) myset = {'apple', 'banana', 'cherry'}", "C"],
-            ["What is 10 + 4?", "A) 12", "B) 14", "C) 16", "B"],
-            ["What is 20 - 9?", "A) 7", "B) 13", "C) 11", "C"],
-            ["What is 7 x 3?", "A) 21", "B) 24", "C) 25", "A"],
-            ["What is 8 / 2?", "A) 10", "B) 2", "C) 4", "C"]
+            ["7. Which one of these is a set?", "A) myset = ('apple', 'banana', 'cherry')", "B) myset = ['apple', 'banana', 'cherry']", "C) myset = {'apple', 'banana', 'cherry'}", "C"]
         ];
 
         function _(x) {
             return document.getElementById(x);
+        }
+
+        function startQuiz() {
+            name = _("name").value;
+            batchNo = _("batchNo").value;
+            studentId = _("studentId").value;
+            if (!name || !batchNo || !studentId) {
+                alert("Please fill all fields before starting the quiz.");
+                return;
+            }
+            _("userInput").style.display = "none"; // Hide input form
+            _("test").style.display = "block"; // Show the test
+            _("test_status").style.display = "block"; // Show the status
+            renderQuestion();
         }
 
         function renderQuestion() {
@@ -77,15 +120,15 @@
 
         function checkAnswer() {
             choices = document.getElementsByName("choices");
-            choice = null; // Initialize choice
+            choice = null;
             for (var i = 0; i < choices.length; i++) {
                 if (choices[i].checked) {
                     choice = choices[i].value;
-                    break; // Exit loop once a choice is made
+                    break;
                 }
             }
             if (choice) {
-                userAnswers.push(choice); // Store the user's answer
+                userAnswers.push(choice);
                 if (choice === questions[pos][4]) {
                     correct++;
                 }
@@ -115,19 +158,39 @@
         function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            const margin = 10;
 
-            let reportContent = `Quiz Report\n\nYou got ${correct} out of ${questions.length} questions correct.\n\nYour Answers:\n`;
-            for (var i = 0; i < questions.length; i++) {
-                reportContent += `Q${i + 1}: ${questions[i][0]}\n`;
-                reportContent += `Options: ${questions[i][1]}, ${questions[i][2]}, ${questions[i][3]}\n`;
-                reportContent += `Your Answer: ${userAnswers[i]} | Correct Answer: ${questions[i][4]}\n\n`;
-            }
+            doc.setFontSize(12); // Smaller font size for PDF
 
-            doc.text(reportContent, 10, 10);
+            doc.text(`Quiz Report`, margin, margin);
+            doc.text(`Name: ${name}`, margin, margin + 10);
+            doc.text(`Batch No: ${batchNo}`, margin, margin + 20);
+            doc.text(`ID: ${studentId}`, margin, margin + 30);
+            doc.text(`You got ${correct} out of ${questions.length} questions correct.\n\n`, margin, margin + 40);
+
+            let y = margin + 50;
+
+            questions.forEach((q, i) => {
+                doc.text(`Q${i + 1}: ${q[0]}`, margin, y);
+                y += 10;
+                doc.text(`Options: ${q[1]}, ${q[2]}, ${q[3]}`, margin, y);
+                y += 10;
+                doc.text(`Your Answer: ${userAnswers[i]} | Correct Answer: ${q[4]}`, margin, y);
+                y += 20;
+
+                // Check if new page is needed
+                if (y > 280) {
+                    doc.addPage();
+                    y = margin;
+                }
+            });
+
             doc.save('quiz_report.pdf');
         }
 
-        window.addEventListener("load", renderQuestion, false);
+        window.addEventListener("load", function() {
+            _("userInput").style.display = "block";
+        }, false);
     </script>
 
 </body>
