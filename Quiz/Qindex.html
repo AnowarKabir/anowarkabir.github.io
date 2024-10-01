@@ -141,69 +141,76 @@
         }
 
         function displayResults() {
-            var resultHTML = "<h2>You got " + correct + " out of " + questions.length + " questions correct.</h2>";
-            resultHTML += "<h3>Your Answers:</h3>";
-            resultHTML += "<ul>";
-            for (var i = 0; i < questions.length; i++) {
-                var answerClass = userAnswers[i] === questions[i][4] ? "correct" : "incorrect";
-                resultHTML += "<li>Q" + (i + 1) + ": " + questions[i][0] + "<br>";
-                resultHTML += "Options: " + questions[i][1] + ", " + questions[i][2] + ", " + questions[i][3] + "<br>";
-                resultHTML += "Your Answer: <span class='" + answerClass + "'>" + userAnswers[i] + "</span> | Correct Answer: <span class='correct'>" + questions[i][4] + "</span></li>";
-            }
-            resultHTML += "</ul>";
-            _("test").innerHTML = resultHTML;
-            _("test_status").innerHTML = "Test Completed";
-            _("pdfButton").style.display = "block"; // Show PDF button
-            
-            // Store user info and score in local storage
-            storeUserInfo(name, batchNo, studentId, correct, questions.length);
+    var resultHTML = "<h2>You got " + correct + " out of " + questions.length + " questions correct.</h2>";
+    resultHTML += "<h3>Your Answers:</h3>";
+    resultHTML += "<ul>";
+    for (var i = 0; i < questions.length; i++) {
+        var answerClass = userAnswers[i] === questions[i][4] ? "correct" : "incorrect";
+        resultHTML += "<li>Q" + (i + 1) + ": " + questions[i][0] + "<br>";
+        resultHTML += "Options: " + questions[i][1] + ", " + questions[i][2] + ", " + questions[i][3] + "<br>";
+        resultHTML += "Your Answer: <span class='" + answerClass + "'>" + userAnswers[i] + "</span> | Correct Answer: <span class='correct'>" + questions[i][4] + "</span></li>";
+    }
+    resultHTML += "</ul>";
+    _("test").innerHTML = resultHTML;
+    _("test_status").innerHTML = "Test Completed";
+
+    // Show PDF button
+    _("pdfButton").style.display = "block";
+    
+    // Store user info in local storage and wait for PDF generation before redirecting
+    storeUserInfo(name, batchNo, studentId, correct, questions.length);
+}
+
+function storeUserInfo(name, batchNo, studentId, correct, totalQuestions) {
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    users.push({ name, batchNo, studentId, correct, totalQuestions });
+    localStorage.setItem('users', JSON.stringify(users));
+
+    // Generate the PDF first before navigating to the results page
+    generatePDF(() => {
+        // After the PDF is generated, redirect to the results page (webDev.html)
+        window.location.href = '../webDev.html';
+    });
+}
+
+function generatePDF(callback) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const margin = 10;
+
+    doc.setFontSize(12); // Smaller font size for PDF
+
+    doc.text(`Quiz Report`, margin, margin);
+    doc.text(`Name: ${name}`, margin, margin + 10);
+    doc.text(`Batch No: ${batchNo}`, margin, margin + 20);
+    doc.text(`ID: ${studentId}`, margin, margin + 30);
+    doc.text(`You got ${correct} out of ${questions.length} questions correct.\n\n`, margin, margin + 40);
+
+    let y = margin + 50;
+
+    questions.forEach((q, i) => {
+        doc.text(`Q${i + 1}: ${q[0]}`, margin, y);
+        y += 10;
+        doc.text(`Options: ${q[1]}, ${q[2]}, ${q[3]}`, margin, y);
+        y += 10;
+        doc.text(`Your Answer: ${userAnswers[i]} | Correct Answer: ${q[4]}`, margin, y);
+        y += 20;
+
+        // Check if new page is needed
+        if (y > 280) {
+            doc.addPage();
+            y = margin;
         }
+    });
 
-        function storeUserInfo(name, batchNo, studentId, correct, totalQuestions) {
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            users.push({ name, batchNo, studentId, correct, totalQuestions });
-            localStorage.setItem('users', JSON.stringify(users));
+    doc.save('quiz_report.pdf');
 
-            // Redirect to the results page (webDev.html)
-            window.location.href = '../webDev.html';
-        }
+    // After saving the PDF, call the callback function
+    if (typeof callback === 'function') {
+        callback();
+    }
+}
 
-        function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const margin = 10;
-
-            doc.setFontSize(12); // Smaller font size for PDF
-
-            doc.text(`Quiz Report`, margin, margin);
-            doc.text(`Name: ${name}`, margin, margin + 10);
-            doc.text(`Batch No: ${batchNo}`, margin, margin + 20);
-            doc.text(`ID: ${studentId}`, margin, margin + 30);
-            doc.text(`You got ${correct} out of ${questions.length} questions correct.\n\n`, margin, margin + 40);
-
-            let y = margin + 50;
-
-            questions.forEach((q, i) => {
-                doc.text(`Q${i + 1}: ${q[0]}`, margin, y);
-                y += 10;
-                doc.text(`Options: ${q[1]}, ${q[2]}, ${q[3]}`, margin, y);
-                y += 10;
-                doc.text(`Your Answer: ${userAnswers[i]} | Correct Answer: ${q[4]}`, margin, y);
-                y += 20;
-
-                // Check if new page is needed
-                if (y > 280) {
-                    doc.addPage();
-                    y = margin;
-                }
-            });
-
-            doc.save('quiz_report.pdf');
-        }
-
-        window.addEventListener("load", function() {
-            _("userInput").style.display = "block";
-        }, false);
     </script>
 
 </body>
