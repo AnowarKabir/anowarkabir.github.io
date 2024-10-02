@@ -80,7 +80,63 @@
             ["4. What will be the result of the following syntax: x = 5; x += 6; print(x)", "A) 5", "B) 6", "C) 11", "C"],
             ["5. What will be the result of the following syntax: mylist = ['apple', 'banana', 'cherry']; print(mylist[-1])", "A) apple", "B) banana", "C) cherry", "C"],
             ["6. Which one of these is a tuple?", "A) thistuple = ('apple', 'banana', 'cherry')", "B) thistuple = ['apple', 'banana', 'cherry']", "C) thistuple = {'apple', 'banana', 'cherry'}", "A"],
-            ["7. Which one of these is a set?", "A) myset = ('apple', 'banana', 'cherry')", "B) myset = ['apple', 'banana', 'cherry']", "C) myset = {'apple', 'banana', 'cherry'}", "C"]
+            ["7. Which one of these is a set?", "A) myset = ('apple', 'banana', 'cherry')", "B) myset = ['apple', 'banana', 'cherry']", "C) myset = {'apple', 'banana', 'cherry'}", "C"],
+
+        ["8. Which of the following correctly checks if a variable x is equal to 10?",
+        "A) if x = 10:",
+        "B) if x == 10:",
+        "C) if x => 10:",
+        "B"
+    ],
+    [
+        "9. What does the following code print:<br><pre><code>for i in range(3):<br>    print(i)</code></pre>",
+        "A) All combinations of i and j",
+        "B) 0 1 2",
+        "C) 0 1 2 3",
+        "B"
+    ],
+    [
+        "10. Which of the following methods can be used to add an element to a list?",
+        "A) list.add()",
+        "B) list.append()",
+        "C) list.insert()",
+        "B"
+    ],
+    [
+        "11. What will be the output of the following code:<br><pre><code>for i in range(2):<br>    for j in range(2):<br>        print(i, j)</code></pre>",
+        "A) All combinations of i and j",
+        "B) Only 0 0",
+        "C) Only 1 1",
+        "A"
+    ],
+    [
+        "12. What will be the output of the following code:<br><pre><code>x = [1, 2, 3]<br>x[0] = 10<br>print(x)</code></pre>",
+        "A) [10, 2, 3]",
+        "B) [1, 2, 3]",
+        "C) Error",
+        "A"
+    ],
+    [
+        "13. Which of the following is a valid variable name in Python?",
+        "A) 1variable",
+        "B) variable_1",
+        "C) variable-1",
+        "B"
+    ],
+    [
+        "14. How do you start a comment in Python?",
+        "A) //",
+        "B) #",
+        "C) --",
+        "B"
+    ],
+    [
+        "15. What will the following code print:<br><pre><code>myset = {1, 2, 3}<br>myset.add(2)<br>print(myset)</code></pre>",
+        "A) {1, 2, 3}",
+        "B) {1, 2, 2, 3}",
+        "C) {2, 3}",
+        "A"
+    ]
         ];
 
         function _(x) {
@@ -178,7 +234,7 @@ function generatePDF(callback) {
     const doc = new jsPDF();
     const margin = 10;
 
-    doc.setFontSize(12); // Smaller font size for PDF
+    doc.setFontSize(10); // Smaller font size for PDF
 
     doc.text(`Quiz Report`, margin, margin);
     doc.text(`Name: ${name}`, margin, margin + 10);
