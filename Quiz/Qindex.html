@@ -43,16 +43,16 @@
             margin-bottom: 20px; /* Space between options */
             transform: scale(1.3); /* Increase the size of radio buttons */
         }
-        .input-section {
+        .input-section, .coding-section {
             margin-bottom: 20px;
         }
         .code-box {
-            border: 2px solid #ccc;
-            padding: 10px;
-            background-color: #f9f9f9;
+            border: 1px solid #ccc;
             border-radius: 5px;
+            padding: 10px;
+            width: 100%;
+            height: 100px;
             font-family: monospace;
-            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -79,28 +79,36 @@
 
     <script>
         var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, correct = 0;
-        var userAnswers = [];
+        var userAnswers = [], codingAnswers = [];
         var name, batchNo, studentId;
-        var mcqPartStarted = false; // Track when we start the MCQs
+        
+        var codingQuestions = [
+            {
+                question: "1. Write a function to return the sum of two numbers.",
+                answer: "def sum(a, b):\n    return a + b"
+            },
+            {
+                question: "2. Write a function to check if a number is even or odd.",
+                answer: "def is_even(num):\n    return num % 2 == 0"
+            }
+        ];
+
         var questions = [
             ["1. If x = 5, what is a correct syntax for printing the data type of the variable x?", "A) print(dtype(x))", "B) print(type(x))", "C) print(x.dtype())", "B"],
             ["2. Which is NOT a legal numeric data type in Python?", "A) int", "B) long", "C) float", "B"],
-            // Other 13 MCQ questions here...
-        ];
-
-        var codingQuestions = [
-            {
-                question: "1. Write a Python function to find the factorial of a number.",
-                description: "You need to implement a function `factorial(n)` that takes a number `n` and returns the factorial of `n`.",
-                placeholder: "# Write your code here\n\n",
-                correctAnswer: "def factorial(n):\n    if n == 0:\n        return 1\n    else:\n        return n * factorial(n - 1)"
-            },
-            {
-                question: "2. Write a Python function to reverse a string.",
-                description: "You need to implement a function `reverse_string(s)` that takes a string `s` and returns the reversed string.",
-                placeholder: "# Write your code here\n\n",
-                correctAnswer: "def reverse_string(s):\n    return s[::-1]"
-            }
+            ["3. What will be the result of the following code: <br><pre><code>x = 'Welcome'<br>print(x[3])</code></pre>", "A) Wel", "B) c", "C) Welcome Welcome Welcom", "B"],
+            ["4. What will be the result of the following syntax: <br><pre><code>x = 5<br>x += 6<br>print(x)</code></pre>", "A) 5", "B) 6", "C) 11", "C"],
+            ["5. What will be the result of the following syntax: <br><pre><code>mylist = ['apple', 'banana', 'cherry']<br>print(mylist[-1])</code></pre>", "A) apple", "B) banana", "C) cherry", "C"],
+            ["6. Which one of these is a tuple?", "A) thistuple = ('apple', 'banana', 'cherry')", "B) thistuple = ['apple', 'banana', 'cherry']", "C) thistuple = {'apple', 'banana', 'cherry'}", "A"],
+            ["7. Which one of these is a set?", "A) myset = ('apple', 'banana', 'cherry')", "B) myset = ['apple', 'banana', 'cherry']", "C) myset = {'apple', 'banana', 'cherry'}", "C"],
+            ["8. Which of the following correctly checks if a variable x is equal to 10?", "A) if x = 10:", "B) if x == 10:", "C) if x => 10:", "B"],
+            ["9. What does the following code print:<br><pre><code>for i in range(3):<br>    print(i)</code></pre>", "A) All combinations of i and j", "B) 0 1 2", "C) 0 1 2 3", "B"],
+            ["10. Which of the following methods can be used to add an element to a list?", "A) list.add()", "B) list.append()", "C) list.insert()", "B"],
+            ["11. What will be the output of the following code:<br><pre><code>for i in range(2):<br>    for j in range(2):<br>        print(i, j)</code></pre>", "A) All combinations of i and j", "B) Only 0 0", "C) Only 1 1", "A"],
+            ["12. What will be the output of the following code:<br><pre><code>x = [1, 2, 3]<br>x[0] = 10<br>print(x)</code></pre>", "A) [10, 2, 3]", "B) [1, 2, 3]", "C) Error", "A"],
+            ["13. Which of the following is a valid variable name in Python?", "A) 1variable", "B) variable_1", "C) variable-1", "B"],
+            ["14. How do you start a comment in Python?", "A) //", "B) #", "C) --", "B"],
+            ["15. What will the following code print:<br><pre><code>myset = {1, 2, 3}<br>myset.add(2)<br>print(myset)</code></pre>", "A) {1, 2, 3}", "B) {1, 2, 2, 3}", "C) {2, 3}", "A"]
         ];
 
         function _(x) {
@@ -118,62 +126,51 @@
             _("userInput").style.display = "none"; // Hide input form
             _("test").style.display = "block"; // Show the test
             _("test_status").style.display = "block"; // Show the status
-            renderCodingQuestions(); // Start with the coding questions
+            renderCodingQuestion();
         }
 
-        function renderCodingQuestions() {
-            var codingHTML = "<h2>Part 1: Coding Problems</h2>";
-            codingQuestions.forEach((codingQ, index) => {
-                codingHTML += "<h3>" + codingQ.question + "</h3>";
-                codingHTML += "<p>" + codingQ.description + "</p>";
-                codingHTML += "<div class='code-box'><textarea id='codingAnswer" + index + "' rows='6' cols='80' placeholder='" + codingQ.placeholder + "'></textarea></div>";
-            });
-            codingHTML += "<button onclick='renderMCQs()'>Proceed to Part 2: MCQs</button>";
-            _("test").innerHTML = codingHTML;
+        function renderCodingQuestion() {
+            test = _("test");
+            if (pos < codingQuestions.length) {
+                _("test_status").innerHTML = "Coding Question " + (pos + 1) + " of " + codingQuestions.length;
+                question = codingQuestions[pos].question;
+                test.innerHTML = "<h3>" + question + "</h3>";
+                test.innerHTML += "<textarea class='code-box' id='codingAnswer" + pos + "' placeholder='Write your code here...'></textarea><br>";
+                test.innerHTML += "<button onclick='submitCodingAnswer()'>Submit Coding Answer</button>";
+            } else {
+                renderQuestion();
+            }
         }
 
-        function renderMCQs() {
-            mcqPartStarted = true; // Mark the MCQ part as started
-            pos = 0; // Reset position for MCQs
-            renderQuestion();
+        function submitCodingAnswer() {
+            var codingAnswer = _("codingAnswer" + pos).value;
+            if (codingAnswer) {
+                codingAnswers.push(codingAnswer);
+                pos++;
+                renderCodingQuestion();
+            } else {
+                alert("Please write your answer before submitting.");
+            }
         }
 
         function renderQuestion() {
-            if (!mcqPartStarted) {
-                renderMCQs(); // Make sure to start the MCQ part if not already started
-                return;
+            if (pos < questions.length) {
+                _("test_status").innerHTML = "Question " + (pos + 1) + " of " + questions.length;
+                question = questions[pos][0];
+                test.innerHTML = "<h3>" + question + "</h3>";
+                for (var i = 1; i <= 4; i++) {
+                    test.innerHTML += "<input type='radio' name='choices' value='" + questions[pos][i].charAt(0) + "'>" + questions[pos][i] + "<br>";
+                }
+                test.innerHTML += "<button onclick='submitAnswer()'>Submit Answer</button>";
+            } else {
+                displayResults();
             }
-            test = _("test");
-            if (pos >= questions.length) {
-                displayResults(); // Move to final results
-                return false;
-            }
-            _("test_status").innerHTML = "Part 2: Question " + (pos + 1) + " of " + questions.length;
-            question = questions[pos][0];
-            chA = questions[pos][1];
-            chB = questions[pos][2];
-            chC = questions[pos][3];
-            test.innerHTML = "<h3>" + question + "</h3>";
-            test.innerHTML += "<input type='radio' name='choices' value='A'> " + chA + "<br>";
-            test.innerHTML += "<input type='radio' name='choices' value='B'> " + chB + "<br>";
-            test.innerHTML += "<input type='radio' name='choices' value='C'> " + chC + "<br><br>";
-            test.innerHTML += "<button onclick='checkAnswer()'>Submit Answer</button>";
         }
 
-        function checkAnswer() {
-            choices = document.getElementsByName("choices");
-            choice = null;
-            for (var i = 0; i < choices.length; i++) {
-                if (choices[i].checked) {
-                    choice = choices[i].value;
-                    break;
-                }
-            }
+        function submitAnswer() {
+            var choice = document.querySelector('input[name="choices"]:checked');
             if (choice) {
-                userAnswers.push(choice);
-                if (choice === questions[pos][4]) {
-                    correct++;
-                }
+                userAnswers.push(choice.value);
                 pos++;
                 renderQuestion();
             } else {
@@ -183,31 +180,26 @@
 
         function displayResults() {
             var resultHTML = "<h2>You got " + correct + " out of " + questions.length + " questions correct.</h2>";
-            resultHTML += "<h3>Your Answers:</h3>";
-            resultHTML += "<ul>";
+            resultHTML += "<h3>Your Coding Answers:</h3><ul>";
+            codingQuestions.forEach((q, i) => {
+                resultHTML += "<li>Q" + (i + 1) + ": " + q.question + "<br>";
+                resultHTML += "Your Answer: <pre>" + codingAnswers[i] + "</pre></li>";
+            });
+            resultHTML += "</ul><h3>Your MCQ Answers:</h3><ul>";
             for (var i = 0; i < questions.length; i++) {
                 var answerClass = userAnswers[i] === questions[i][4] ? "correct" : "incorrect";
+                if (userAnswers[i] === questions[i][4]) {
+                    correct++;
+                }
                 resultHTML += "<li>Q" + (i + 1) + ": " + questions[i][0] + "<br>";
                 resultHTML += "Options: " + questions[i][1] + ", " + questions[i][2] + ", " + questions[i][3] + "<br>";
                 resultHTML += "Your Answer: <span class='" + answerClass + "'>" + userAnswers[i] + "</span> | Correct Answer: <span class='correct'>" + questions[i][4] + "</span></li>";
             }
             resultHTML += "</ul>";
-
-            resultHTML += "<h3>Your Coding Answers:</h3>";
-            codingQuestions.forEach((codingQ, index) => {
-                var userCode = _("codingAnswer" + index).value.trim();
-                resultHTML += "<li>" + codingQ.question + "<br>";
-                resultHTML += "Your Code: <pre>" + userCode + "</pre>";
-                resultHTML += "Expected Answer: <pre>" + codingQ.correctAnswer + "</pre></li>";
-            });
-
-            test.innerHTML = resultHTML;
+            _("test").innerHTML = resultHTML;
             _("test_status").innerHTML = "Test Completed";
 
-            // Show PDF button
-            _("pdfButton").style.display = "block";
-
-            // Store user info in local storage and wait for PDF generation before redirecting
+            // Store user info in local storage and generate the PDF
             storeUserInfo(name, batchNo, studentId, correct, questions.length);
         }
 
@@ -216,11 +208,8 @@
             users.push({ name, batchNo, studentId, correct, totalQuestions });
             localStorage.setItem('users', JSON.stringify(users));
 
-            // Generate the PDF first before navigating to the results page
-            generatePDF(() => {
-                // After the PDF is generated, redirect to the results page (webDev.html)
-                window.location.href = '../webDev.html';
-            });
+            // Navigate to results page after storing user data
+            window.location.href = '../webDev.html'; // Redirect to webDev.html
         }
 
         function generatePDF(callback) {
@@ -238,6 +227,26 @@
 
             let y = margin + 50;
 
+            // Coding Questions
+            doc.text(`Coding Answers:`, margin, y);
+            y += 10;
+
+            codingQuestions.forEach((q, i) => {
+                doc.text(`Q${i + 1}: ${q.question}`, margin, y);
+                y += 10;
+                doc.text(`Your Answer:\n${codingAnswers[i]}`, margin, y);
+                y += 20;
+
+                // Check if new page is needed
+                if (y > 280) {
+                    doc.addPage();
+                    y = margin;
+                }
+            });
+
+            doc.text(`MCQ Results:`, margin, y);
+            y += 10;
+
             questions.forEach((q, i) => {
                 doc.text(`Q${i + 1}: ${q[0]}`, margin, y);
                 y += 10;
@@ -252,40 +261,14 @@
                     y = margin;
                 }
             });
+      
 
-            // Add coding answers section
-            doc.addPage();
-            doc.setFontSize(12);
-            doc.text("Coding Answers", margin, margin);
-
-            codingQuestions.forEach((codingQ, index) => {
-                var userCode = _("codingAnswer" + index).value.trim();
-                doc.setFontSize(10);
-                doc.text(codingQ.question, margin, y);
-                y += 10;
-                doc.text("Your Code:", margin, y);
-                y += 10;
-                doc.text(userCode || "No answer provided", margin, y);
-                y += 10;
-                doc.text("Expected Answer:", margin, y);
-                y += 10;
-                doc.text(codingQ.correctAnswer, margin, y);
-                y += 20;
-
-                if (y > 280) {
-                    doc.addPage();
-                    y = margin;
-                }
-            });
 
             doc.save('quiz_report.pdf');
-
-            // After saving the PDF, call the callback function
-            if (typeof callback === 'function') {
-                callback();
-            }
+ if (typeof callback === 'function') {
+        callback();
+    }
         }
     </script>
-
 </body>
 </html>
