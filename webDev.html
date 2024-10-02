@@ -36,8 +36,6 @@
 </head>
 <body>
 
-    
-
     <!-- Add a button to go back to the quiz page -->
     <button onclick="goToQuizPage()">Go to Quiz Page</button>
 
@@ -63,7 +61,7 @@
     <script>
         // Function to redirect to the quiz page (Qindex.html)
         function goToQuizPage() {
-            window.location.href = 'Quiz/Qindex.html'; // Redirect to Qindex.html
+            window.location.href = 'Quiz/Qindex.html'; // Ensure this path is correct
         }
 
         // Fetch user data from local storage and display it in the table
@@ -72,17 +70,19 @@
             const tableBody = document.getElementById('userTableBody');
             users.forEach(user => {
                 const row = document.createElement('tr');
-                row.innerHTML = 
+                // Use backticks for template literals
+                row.innerHTML = `
                     <td>${user.name}</td>
                     <td>${user.batchNo}</td>
                     <td>${user.studentId}</td>
                     <td>${user.correct}</td>
                     <td>${user.totalQuestions}</td>
-                ;
+                `;
                 tableBody.appendChild(row);
             });
         }
 
+        // Load user data when the window loads
         window.onload = loadUserData;
     </script>
 
