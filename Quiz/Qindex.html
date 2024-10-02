@@ -46,6 +46,9 @@
         .input-section {
             margin-bottom: 20px;
         }
+        .theory-question {
+            margin-bottom: 20px; /* Space between theory questions */
+        }
     </style>
 </head>
 <body>
@@ -72,6 +75,7 @@
     <script>
         var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, correct = 0;
         var userAnswers = [];
+        var theoryAnswers = [];
         var name, batchNo, studentId;
         var questions = [
             ["1. If x = 5, what is a correct syntax for printing the data type of the variable x?", "A) print(dtype(x))", "B) print(type(x))", "C) print(x.dtype())", "B"],
@@ -81,62 +85,62 @@
             ["5. What will be the result of the following syntax: <br><pre><code>mylist = ['apple', 'banana', 'cherry']<br>print(mylist[-1])</code></pre>", "A) apple", "B) banana", "C) cherry", "C"],
             ["6. Which one of these is a tuple?", "A) thistuple = ('apple', 'banana', 'cherry')", "B) thistuple = ['apple', 'banana', 'cherry']", "C) thistuple = {'apple', 'banana', 'cherry'}", "A"],
             ["7. Which one of these is a set?", "A) myset = ('apple', 'banana', 'cherry')", "B) myset = ['apple', 'banana', 'cherry']", "C) myset = {'apple', 'banana', 'cherry'}", "C"],
-
-        ["8. Which of the following correctly checks if a variable x is equal to 10?",
-        "A) if x = 10:",
-        "B) if x == 10:",
-        "C) if x => 10:",
-        "B"
-    ],
-    [
-        "9. What does the following code print:<br><pre><code>for i in range(3):<br>    print(i)</code></pre>",
-        "A) All combinations of i and j",
-        "B) 0 1 2",
-        "C) 0 1 2 3",
-        "B"
-    ],
-    [
-        "10. Which of the following methods can be used to add an element to a list?",
-        "A) list.add()",
-        "B) list.append()",
-        "C) list.insert()",
-        "B"
-    ],
-    [
-        "11. What will be the output of the following code:<br><pre><code>for i in range(2):<br>    for j in range(2):<br>        print(i, j)</code></pre>",
-        "A) All combinations of i and j",
-        "B) Only 0 0",
-        "C) Only 1 1",
-        "A"
-    ],
-    [
-        "12. What will be the output of the following code:<br><pre><code>x = [1, 2, 3]<br>x[0] = 10<br>print(x)</code></pre>",
-        "A) [10, 2, 3]",
-        "B) [1, 2, 3]",
-        "C) Error",
-        "A"
-    ],
-    [
-        "13. Which of the following is a valid variable name in Python?",
-        "A) 1variable",
-        "B) variable_1",
-        "C) variable-1",
-        "B"
-    ],
-    [
-        "14. How do you start a comment in Python?",
-        "A) //",
-        "B) #",
-        "C) --",
-        "B"
-    ],
-    [
-        "15. What will the following code print:<br><pre><code>myset = {1, 2, 3}<br>myset.add(2)<br>print(myset)</code></pre>",
-        "A) {1, 2, 3}",
-        "B) {1, 2, 2, 3}",
-        "C) {2, 3}",
-        "A"
-    ]
+            [
+                "8. Which of the following correctly checks if a variable x is equal to 10?",
+                "A) if x = 10:",
+                "B) if x == 10:",
+                "C) if x => 10:",
+                "B"
+            ],
+            [
+                "9. What does the following code print:<br><pre><code>for i in range(3):<br>    print(i)</code></pre>",
+                "A) All combinations of i and j",
+                "B) 0 1 2",
+                "C) 0 1 2 3",
+                "B"
+            ],
+            [
+                "10. Which of the following methods can be used to add an element to a list?",
+                "A) list.add()",
+                "B) list.append()",
+                "C) list.insert()",
+                "B"
+            ],
+            [
+                "11. What will be the output of the following code:<br><pre><code>for i in range(2):<br>    for j in range(2):<br>        print(i, j)</code></pre>",
+                "A) All combinations of i and j",
+                "B) Only 0 0",
+                "C) Only 1 1",
+                "A"
+            ],
+            [
+                "12. What will be the output of the following code:<br><pre><code>x = [1, 2, 3]<br>x[0] = 10<br>print(x)</code></pre>",
+                "A) [10, 2, 3]",
+                "B) [1, 2, 3]",
+                "C) Error",
+                "A"
+            ],
+            [
+                "13. Which of the following is a valid variable name in Python?",
+                "A) 1variable",
+                "B) variable_1",
+                "C) variable-1",
+                "B"
+            ],
+            [
+                "14. How do you start a comment in Python?",
+                "A) //",
+                "B) #",
+                "C) --",
+                "B"
+            ],
+            [
+                "15. What will the following code print:<br><pre><code>myset = {1, 2, 3}<br>myset.add(2)<br>print(myset)</code></pre>",
+                "A) {1, 2, 3}",
+                "B) {1, 2, 2, 3}",
+                "C) {2, 3}",
+                "A"
+            ]
         ];
 
         function _(x) {
@@ -160,10 +164,10 @@
         function renderQuestion() {
             test = _("test");
             if (pos >= questions.length) {
-                displayResults();
+                renderTheoryQuestions();
                 return false;
             }
-            _("test_status").innerHTML = "Question " + (pos + 1) + " of " + questions.length;
+            _("test_status").innerHTML = "Question " + (pos + 1) + " of " + questions.length + " +2";
             question = questions[pos][0];
             chA = questions[pos][1];
             chB = questions[pos][2];
@@ -196,76 +200,103 @@
             }
         }
 
-        function displayResults() {
-    var resultHTML = "<h2>You got " + correct + " out of " + questions.length + " questions correct.</h2>";
-    resultHTML += "<h3>Your Answers:</h3>";
-    resultHTML += "<ul>";
-    for (var i = 0; i < questions.length; i++) {
-        var answerClass = userAnswers[i] === questions[i][4] ? "correct" : "incorrect";
-        resultHTML += "<li>Q" + (i + 1) + ": " + questions[i][0] + "<br>";
-        resultHTML += "Options: " + questions[i][1] + ", " + questions[i][2] + ", " + questions[i][3] + "<br>";
-        resultHTML += "Your Answer: <span class='" + answerClass + "'>" + userAnswers[i] + "</span> | Correct Answer: <span class='correct'>" + questions[i][4] + "</span></li>";
-    }
-    resultHTML += "</ul>";
-    _("test").innerHTML = resultHTML;
-    _("test_status").innerHTML = "Test Completed";
-
-    // Show PDF button
-    _("pdfButton").style.display = "block";
-    
-    // Store user info in local storage and wait for PDF generation before redirecting
-    storeUserInfo(name, batchNo, studentId, correct, questions.length);
-}
-
-function storeUserInfo(name, batchNo, studentId, correct, totalQuestions) {
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-    users.push({ name, batchNo, studentId, correct, totalQuestions });
-    localStorage.setItem('users', JSON.stringify(users));
-
-    // Generate the PDF first before navigating to the results page
-    generatePDF(() => {
-        // After the PDF is generated, redirect to the results page (webDev.html)
-        window.location.href = '../webDev.html';
-    });
-}
-
-function generatePDF(callback) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const margin = 10;
-
-    doc.setFontSize(10); // Smaller font size for PDF
-
-    doc.text(`Quiz Report`, margin, margin);
-    doc.text(`Name: ${name}`, margin, margin + 10);
-    doc.text(`Batch No: ${batchNo}`, margin, margin + 20);
-    doc.text(`ID: ${studentId}`, margin, margin + 30);
-    doc.text(`You got ${correct} out of ${questions.length} questions correct.\n\n`, margin, margin + 40);
-
-    let y = margin + 50;
-
-    questions.forEach((q, i) => {
-        doc.text(`Q${i + 1}: ${q[0]}`, margin, y);
-        y += 10;
-        doc.text(`Options: ${q[1]}, ${q[2]}, ${q[3]}`, margin, y);
-        y += 10;
-        doc.text(`Your Answer: ${userAnswers[i]} | Correct Answer: ${q[4]}`, margin, y);
-        y += 20;
-
-        // Check if new page is needed
-        if (y > 280) {
-            doc.addPage();
-            y = margin;
+        function renderTheoryQuestions() {
+            test = _("test");
+            _("test_status").innerHTML = "Theory Questions:";
+            test.innerHTML = "<div class='theory-question'><h4>16. Write python program for Multiplication Table of number 7, output looks like <br><pre><code>7*1 = 7<br>7*2 = 14<br>.....<br>......</code></pre></h4><textarea id='theoryAnswer1' rows='4' style='width: 150%;'></textarea></div>";
+            test.innerHTML += "<div class='theory-question'><h4>17. Write a python program that asks the user for their weight (in kg) and height (in meters) and calculates their BMI. Then, check and print the category: <pre><code><br>Underweight: BMI < 18.5<br>Normal weight: 18.5 ≤ BMI < 24.9 <br>Overweight: 25 ≤ BMI < 29.9 <br>Obesity: BMI ≥ 30</code></pre></h4><textarea id='theoryAnswer2' rows='4' style='width: 150%;'></textarea></div>";
+            test.innerHTML += "<button onclick='checkTheoryAnswers()'>Final Submission</button>";
         }
-    });
 
-    doc.save('quiz_report.pdf');
+        function checkTheoryAnswers() {
+            theoryAnswers.push(_("theoryAnswer1").value);
+            theoryAnswers.push(_("theoryAnswer2").value);
+            displayResults();
+        }
 
-    // After saving the PDF, call the callback function
-    if (typeof callback === 'function') {
-        callback();
-    }
-}
+        function displayResults() {
+            var resultHTML = "<h2>You got " + correct + " out of " + questions.length + " questions correct.</h2>";
+            resultHTML += "<h3>Your Answers:</h3>";
+            resultHTML += "<ul>";
+            for (var i = 0; i < questions.length; i++) {
+                var answerClass = userAnswers[i] === questions[i][4] ? "correct" : "incorrect";
+                resultHTML += "<li>Q" + (i + 1) + ": " + questions[i][0] + "<br>";
+                resultHTML += "Options: " + questions[i][1] + ", " + questions[i][2] + ", " + questions[i][3] + "<br>";
+                resultHTML += "Your Answer: <span class='" + answerClass + "'>" + userAnswers[i] + "</span> | Correct Answer: <span class='correct'>" + questions[i][4] + "</span></li>";
+            }
+            resultHTML += "</ul>";
+            resultHTML += "<h3>Theory Answers:</h3>";
+            resultHTML += "<ul>";
+            resultHTML += "<li>16: " + theoryAnswers[0] + "</li>";
+            resultHTML += "<li>17: " + theoryAnswers[1] + "</li>";
+            resultHTML += "</ul>";
+            _("test").innerHTML = resultHTML;
+            _("test_status").innerHTML = "Test Completed";
+
+            // Show PDF button
+            _("pdfButton").style.display = "block";
+            
+            // Store user info in local storage and wait for PDF generation before redirecting
+            storeUserInfo(name, batchNo, studentId, correct, questions.length);
+        }
+
+        function storeUserInfo(name, batchNo, studentId, correct, totalQuestions) {
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            users.push({ name, batchNo, studentId, correct, totalQuestions });
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Generate the PDF first before navigating to the results page
+            generatePDF(() => {
+                // After the PDF is generated, redirect to the results page (webDev.html)
+                window.location.href = '../webDev.html';
+            });
+        }
+
+        function generatePDF(callback) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const margin = 10;
+
+            doc.setFontSize(10); // Smaller font size for PDF
+
+            doc.text(`Quiz Report`, margin, margin);
+            doc.text(`Name: ${name}`, margin, margin + 10);
+            doc.text(`Batch No: ${batchNo}`, margin, margin + 20);
+            doc.text(`ID: ${studentId}`, margin, margin + 30);
+            doc.text(`You got ${correct} out of ${questions.length} questions correct.\n\n`, margin, margin + 40);
+
+            let y = margin + 50;
+
+            questions.forEach((q, i) => {
+                doc.text(`Q${i + 1}: ${q[0]}`, margin, y);
+                y += 10;
+                doc.text(`Options: ${q[1]}, ${q[2]}, ${q[3]}`, margin, y);
+                y += 10;
+                doc.text(`Your Answer: ${userAnswers[i]} | Correct Answer: ${q[4]}`, margin, y);
+                y += 10;
+
+                // Check if new page is needed
+                if (y > 280) {
+                    doc.addPage();
+                    y = margin;
+                }
+            });
+
+            // Add theory answers to PDF
+            doc.text(`Theory Answers:`, margin, y);
+            y += 10;
+            doc.text(`16: ${theoryAnswers[0]}`, margin, y);
+            y += 60;
+            doc.text(`17: ${theoryAnswers[1]}`, margin, y);
+            y += 60;
+
+            doc.save(`${name}_Quiz_Report.pdf`);
+
+            // After saving the PDF, call the callback function
+            if (typeof callback === 'function') {
+                callback();
+            }
+        }
 
     </script>
 
