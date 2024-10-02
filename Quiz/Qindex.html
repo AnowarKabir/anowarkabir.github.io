@@ -46,6 +46,14 @@
         .input-section {
             margin-bottom: 20px;
         }
+        .code-box {
+            border: 2px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            font-family: monospace;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -73,12 +81,13 @@
         var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, correct = 0;
         var userAnswers = [];
         var name, batchNo, studentId;
-        var questions = [
+        var mcqPartStarted = false; // Track when we start the MCQs
+       var questions = [
             ["1. If x = 5, what is a correct syntax for printing the data type of the variable x?", "A) print(dtype(x))", "B) print(type(x))", "C) print(x.dtype())", "B"],
             ["2. Which is NOT a legal numeric data type in Python?", "A) int", "B) long", "C) float", "B"],
-            ["3. What will be the result of the following code: x = 'Welcome'; print(x[3])", "A) Wel", "B) c", "C) Welcome Welcome Welcom", "B"],
-            ["4. What will be the result of the following syntax: x = 5; x += 6; print(x)", "A) 5", "B) 6", "C) 11", "C"],
-            ["5. What will be the result of the following syntax: mylist = ['apple', 'banana', 'cherry']; print(mylist[-1])", "A) apple", "B) banana", "C) cherry", "C"],
+            ["3. What will be the result of the following code: <br><pre><code>x = 'Welcome'<br>print(x[3])</code></pre>", "A) Wel", "B) c", "C) Welcome Welcome Welcom", "B"],
+            ["4. What will be the result of the following syntax: <br><pre><code>x = 5<br>x += 6<br>print(x)</code></pre>", "A) 5", "B) 6", "C) 11", "C"],
+            ["5. What will be the result of the following syntax: <br><pre><code>mylist = ['apple', 'banana', 'cherry']<br>print(mylist[-1])</code></pre>", "A) apple", "B) banana", "C) cherry", "C"],
             ["6. Which one of these is a tuple?", "A) thistuple = ('apple', 'banana', 'cherry')", "B) thistuple = ['apple', 'banana', 'cherry']", "C) thistuple = {'apple', 'banana', 'cherry'}", "A"],
             ["7. Which one of these is a set?", "A) myset = ('apple', 'banana', 'cherry')", "B) myset = ['apple', 'banana', 'cherry']", "C) myset = {'apple', 'banana', 'cherry'}", "C"],
 
@@ -139,6 +148,23 @@
     ]
         ];
 
+
+
+        var codingQuestions = [
+            {
+                question: "1. Write a Python function to find the factorial of a number.",
+                description: "You need to implement a function `factorial(n)` that takes a number `n` and returns the factorial of `n`.",
+                placeholder: "# Write your code here\n\n",
+                correctAnswer: "def factorial(n):\n    if n == 0:\n        return 1\n    else:\n        return n * factorial(n - 1)"
+            },
+            {
+                question: "2. Write a Python function to reverse a string.",
+                description: "You need to implement a function `reverse_string(s)` that takes a string `s` and returns the reversed string.",
+                placeholder: "# Write your code here\n\n",
+                correctAnswer: "def reverse_string(s):\n    return s[::-1]"
+            }
+        ];
+
         function _(x) {
             return document.getElementById(x);
         }
@@ -154,16 +180,37 @@
             _("userInput").style.display = "none"; // Hide input form
             _("test").style.display = "block"; // Show the test
             _("test_status").style.display = "block"; // Show the status
+            renderCodingQuestions(); // Start with the coding questions
+        }
+
+        function renderCodingQuestions() {
+            var codingHTML = "<h2>Part 1: Coding Problems</h2>";
+            codingQuestions.forEach((codingQ, index) => {
+                codingHTML += "<h3>" + codingQ.question + "</h3>";
+                codingHTML += "<p>" + codingQ.description + "</p>";
+                codingHTML += "<div class='code-box'><textarea id='codingAnswer" + index + "' rows='6' cols='80' placeholder='" + codingQ.placeholder + "'></textarea></div>";
+            });
+            codingHTML += "<button onclick='renderMCQs()'>Proceed to Part 2: MCQs</button>";
+            _("test").innerHTML = codingHTML;
+        }
+
+        function renderMCQs() {
+            mcqPartStarted = true; // Mark the MCQ part as started
+            pos = 0; // Reset position for MCQs
             renderQuestion();
         }
 
         function renderQuestion() {
+            if (!mcqPartStarted) {
+                renderMCQs(); // Make sure to start the MCQ part if not already started
+                return;
+            }
             test = _("test");
             if (pos >= questions.length) {
-                displayResults();
+                displayResults(); // Move to final results
                 return false;
             }
-            _("test_status").innerHTML = "Question " + (pos + 1) + " of " + questions.length;
+            _("test_status").innerHTML = "Part 2: Question " + (pos + 1) + " of " + questions.length;
             question = questions[pos][0];
             chA = questions[pos][1];
             chB = questions[pos][2];
@@ -197,76 +244,70 @@
         }
 
         function displayResults() {
-    var resultHTML = "<h2>You got " + correct + " out of " + questions.length + " questions correct.</h2>";
-    resultHTML += "<h3>Your Answers:</h3>";
-    resultHTML += "<ul>";
-    for (var i = 0; i < questions.length; i++) {
-        var answerClass = userAnswers[i] === questions[i][4] ? "correct" : "incorrect";
-        resultHTML += "<li>Q" + (i + 1) + ": " + questions[i][0] + "<br>";
-        resultHTML += "Options: " + questions[i][1] + ", " + questions[i][2] + ", " + questions[i][3] + "<br>";
-        resultHTML += "Your Answer: <span class='" + answerClass + "'>" + userAnswers[i] + "</span> | Correct Answer: <span class='correct'>" + questions[i][4] + "</span></li>";
-    }
-    resultHTML += "</ul>";
-    _("test").innerHTML = resultHTML;
-    _("test_status").innerHTML = "Test Completed";
+            var resultHTML = "<h2>You got " + correct + " out of " + questions.length + " questions correct.</h2>";
+            resultHTML += "<h3>Your Answers:</h3>";
+            resultHTML += "<ul>";
+            for (var i = 0; i < questions.length; i++) {
+                var answerClass = userAnswers[i] === questions[i][4] ? "correct" : "incorrect";
+                resultHTML += "<li>Q" + (i + 1) + ": " + questions[i][0] + "<br>";
+                resultHTML += "Options: " + questions[i][1] + ", " + questions[i][2] + ", " + questions[i][3] + "<br>";
+                resultHTML += "Your Answer: <span class='" + answerClass + "'>" + userAnswers[i] + "</span> | Correct Answer: <span class='correct'>" + questions[i][4] + "</span></li>";
+            }
+            resultHTML += "</ul>";
 
-    // Show PDF button
-    _("pdfButton").style.display = "block";
-    
-    // Store user info in local storage and wait for PDF generation before redirecting
-    storeUserInfo(name, batchNo, studentId, correct, questions.length);
-}
+            resultHTML += "<h3>Your Coding Answers:</h3>";
+            codingQuestions.forEach((codingQ, index) => {
+                var userCode = _("codingAnswer" + index).value.trim();
+                resultHTML += "<li>" + codingQ.question + "<br>";
+                resultHTML += "Your Code: <pre>" + userCode + "</pre>";
+                resultHTML += "Expected Answer: <pre>" + codingQ.correctAnswer + "</pre></li>";
+            });
 
-function storeUserInfo(name, batchNo, studentId, correct, totalQuestions) {
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-    users.push({ name, batchNo, studentId, correct, totalQuestions });
-    localStorage.setItem('users', JSON.stringify(users));
-
-    // Generate the PDF first before navigating to the results page
-    generatePDF(() => {
-        // After the PDF is generated, redirect to the results page (webDev.html)
-        window.location.href = '../webDev.html';
-    });
-}
-
-function generatePDF(callback) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    const margin = 10;
-
-    doc.setFontSize(10); // Smaller font size for PDF
-
-    doc.text(`Quiz Report`, margin, margin);
-    doc.text(`Name: ${name}`, margin, margin + 10);
-    doc.text(`Batch No: ${batchNo}`, margin, margin + 20);
-    doc.text(`ID: ${studentId}`, margin, margin + 30);
-    doc.text(`You got ${correct} out of ${questions.length} questions correct.\n\n`, margin, margin + 40);
-
-    let y = margin + 50;
-
-    questions.forEach((q, i) => {
-        doc.text(`Q${i + 1}: ${q[0]}`, margin, y);
-        y += 10;
-        doc.text(`Options: ${q[1]}, ${q[2]}, ${q[3]}`, margin, y);
-        y += 10;
-        doc.text(`Your Answer: ${userAnswers[i]} | Correct Answer: ${q[4]}`, margin, y);
-        y += 20;
-
-        // Check if new page is needed
-        if (y > 280) {
-            doc.addPage();
-            y = margin;
+            test.innerHTML = resultHTML;
+            _("pdfButton").style.display = "block";
         }
-    });
 
-    doc.save('quiz_report.pdf');
+        function generatePDF() {
+            var { jsPDF } = window.jspdf;
+            var doc = new jsPDF();
 
-    // After saving the PDF, call the callback function
-    if (typeof callback === 'function') {
-        callback();
-    }
-}
+            var margin = 10;
+            doc.setFontSize(12);
+            doc.text(`Name: ${name}`, margin, margin);
+            doc.text(`Batch No: ${batchNo}`, margin, margin + 10);
+            doc.text(`Student ID: ${studentId}`, margin, margin + 20);
 
+            doc.text(`Python Quiz Report`, margin, margin + 30);
+
+            // Coding questions section
+            doc.setFontSize(14);
+            doc.text(`Part 1: Coding Problems`, margin, margin + 40);
+
+            codingQuestions.forEach((codingQ, index) => {
+                var userCode = _("codingAnswer" + index).value.trim();
+                doc.setFontSize(12);
+                doc.text(codingQ.question, margin, margin + 50);
+                doc.text(`Your Answer:`, margin, margin + 60);
+                doc.text(userCode || "No answer provided", margin, margin + 70);
+                doc.text(`Correct Answer:`, margin, margin + 80);
+                doc.text(codingQ.correctAnswer, margin, margin + 90);
+                margin += 50; // Adjust for space between questions
+            });
+
+            // MCQ Section
+            doc.setFontSize(14);
+            doc.text(`Part 2: MCQs`, margin, margin + 50);
+
+            let y = margin + 60;
+            questions.forEach((q, i) => {
+                doc.text(`${i + 1}. ${q[0]}`, margin, y);
+                doc.text(`Your answer: ${userAnswers[i]} | Correct: ${q[4]}`, margin, y + 10);
+                y += 20;
+            });
+
+            const filename = `Python_Quiz_Report_${name.replace(/ /g, "_")}.pdf`;
+            doc.save(filename);
+        }
     </script>
 
 </body>
