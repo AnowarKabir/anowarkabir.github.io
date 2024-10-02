@@ -208,8 +208,11 @@
             users.push({ name, batchNo, studentId, correct, totalQuestions });
             localStorage.setItem('users', JSON.stringify(users));
 
-            // Navigate to results page after storing user data
-            window.location.href = '../webDev.html'; // Redirect to webDev.html
+            // Generate PDF report before navigating away
+            generatePDF(() => {
+                // Navigate to results page after generating PDF
+                window.location.href = '../webDev.html'; // Redirect to webDev.html
+            });
         }
 
         function generatePDF(callback) {
@@ -261,13 +264,12 @@
                     y = margin;
                 }
             });
-      
 
+            doc.save('quiz_report.pdf'); // Save the PDF
 
-            doc.save('quiz_report.pdf');
- if (typeof callback === 'function') {
-        callback();
-    }
+            if (typeof callback === 'function') {
+                callback();
+            }
         }
     </script>
 </body>
