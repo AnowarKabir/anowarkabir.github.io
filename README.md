@@ -1,10 +1,12 @@
 # Portfolio Website.
-Web Portfolio to showcase projects and skills in a better manner. 
-
+Web Portfolio to showcase experiences and skills in a better manner. 
+# Md. Anowar Kabir
+# Anowar Kabir
+# Md. Anowar Kabir ICT, MBSTU
 
 
 ###### https://anowarkabir.github.io/
-
+###### https://ict.mbstu.ac.bd/mr-md-anowar-kabir/
 
 ### About me
 * Research Profile Page
@@ -12,19 +14,17 @@ Web Portfolio to showcase projects and skills in a better manner.
 * Web Designing Page
 * Software Development Page
 
-### Hire Me banner
-### Skills
-* Skills with progress bar
 ### Education
 * M.Sc.
 * Graduate
-* Intermediate
+* Intermediate HSC
+* SCC
+  
 ### Work Experience
+
 ### Contact
 * Mail Address
 * Location
 
 ### Footer
-------------------------------------------------------------------
 
-1. Make PR title in this format: `Fixes #IssueNo : Name of Issue`
