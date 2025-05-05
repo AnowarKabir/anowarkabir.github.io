@@ -40,6 +40,7 @@
     <button onclick="goToQuizPage()">Go to Quiz Page</button>  <a href="https://anowarkabir.github.io/attendance/">
   <button>Go to Attendance Page - ICT, MBSTU</button>
 </a>
+     <button onclick="goToQsnPage()">Go to Question Page</button>
 
     <br>
     <br>
@@ -65,6 +66,12 @@
         function goToQuizPage() {
             window.location.href = 'Quiz/Qindex.html'; // Ensure this path is correct
         }
+
+         function goToQsnPage(){
+            window.location.href = 'question.html'; // Ensure this path is correct
+        }
+
+        
 
         // Fetch user data from local storage and display it in the table
         function loadUserData() {
