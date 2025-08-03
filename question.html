@@ -1,57 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Classroom Questions</title>
+  <meta charset="UTF-8">
+  <title>Remote Desktop Setup - Local Network</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f9f9f9;
-      padding: 30px;
-      margin: 0;
+      background-color: #f4f7fa;
+      color: #333;
+      padding: 40px;
+      line-height: 1.6;
+    }
+
+    h1, h2 {
+      color: #2b4f81;
     }
 
     h1 {
-      text-align: center;
-      font-size: 48px;
-      color: #333;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 10px;
     }
 
-    .question {
-      font-size: 36px;
+    section {
+      margin-bottom: 30px;
+      background: #ffffff;
       padding: 20px;
-      margin: 20px 0;
-      border-radius: 12px;
-      color: white;
-      font-weight: bold;
+      border-left: 6px solid #2b4f81;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 8px;
     }
 
-    .q1 { background-color: #ff6b6b; }
-    .q2 { background-color: #4dabf7; }
-    .q3 { background-color: #38d9a9; }
-    .q4 { background-color: #ffa94d; }
+    ul {
+      padding-left: 20px;
+    }
 
-    @media (max-width: 600px) {
-      .question {
-        font-size: 28px;
-        padding: 15px;
-      }
-      h1 {
-        font-size: 36px;
-      }
+    li {
+      margin-bottom: 10px;
+    }
+
+    code {
+      background: #e8e8e8;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+      color: #000080;
+    }
+
+    .tip {
+      background: #d8f3dc;
+      padding: 10px;
+      border-left: 5px solid #2d6a4f;
+      margin-top: 15px;
+      border-radius: 5px;
+    }
+
+    .warning {
+      background: #ffe0e0;
+      padding: 10px;
+      border-left: 5px solid #c1121f;
+      margin-top: 15px;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
 
-  <h1>Today's Questions</h1>
+  <h1>Remote Desktop Setup (Local Network)</h1>
 
-  <div class="question q1">1. What is E-Commerce? Briefly Discuss the features of E-Commerce. [5]</div>
-  <div class="question q2">2. Why E-commerce is Needed for an ICT Student? [5]</div>
-  <div class="question q3">3. Briefly describe the B2C E-business model? [5]</div>
-  <div class="question q4">4. Write down the advantages and disadvantages of C2C business model. [5]</div>
+  <section>
+    <h2>✅ Prerequisites</h2>
+    <ul>
+      <li>Both PCs must be on the <strong>same local network</strong> (Wi-Fi or LAN).</li>
+      <li>Host PC must run <strong>Windows 10/11 Pro, Enterprise, or Education</strong>.</li>
+      <li>User account must be <strong>password-protected</strong>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🛠️ Host PC Configuration (PC to be controlled)</h2>
+    <ul>
+      <li>Go to <code>Settings &gt; System &gt; Remote Desktop</code> → Turn on Remote Desktop → Click <strong>Confirm</strong>.</li>
+      <li>Right-click <code>This PC</code> → <strong>Properties</strong> → <code>Remote Settings</code> → Under <strong>Remote Desktop</strong>, click <strong>Select Users</strong> → Add the desired user.</li>
+      <li>Open <code>Control Panel &gt; Windows Defender Firewall</code> → Click <strong>Allow an app...</strong> → Ensure <strong>Remote Desktop</strong> is allowed on <strong>Private</strong> networks.</li>
+      <li>Open Command Prompt and run: <br><code>ipconfig</code><br>Note the <strong>IPv4 Address</strong> (e.g., 192.168.1.10).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🖥️ Client PC Configuration (PC that connects)</h2>
+    <ul>
+      <li>Press <code>Win + R</code> → Type <code>mstsc</code> → Press Enter.</li>
+      <li>Enter the <strong>IP address</strong> of the host PC → Click <strong>Connect</strong>.</li>
+      <li>Login using the <strong>host PC's username and password</strong>.</li>
+      <li>If prompted, accept the certificate warning.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>⚠️ Important Conditions</h2>
+    <ul>
+      <li>Host PC must be <strong>powered on and not asleep</strong>.</li>
+      <li>Both PCs should use a <strong>Private Network</strong> profile (not Public).</li>
+      <li>Firewall/Antivirus must <strong>allow TCP port 3389</strong>.</li>
+      <li>Use <strong>Static IP</strong> or DHCP Reservation for stable connection (optional).</li>
+    </ul>
+  </section>
+
+  <div class="tip">
+    💡 <strong>Tip:</strong> You can also access a PC using its computer name instead of IP, if both devices are properly named and network discovery is enabled.
+  </div>
 
 </body>
 </html>
-
